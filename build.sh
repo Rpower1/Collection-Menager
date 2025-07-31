@@ -12,8 +12,9 @@ export PATH=$PATH:$ANDROID_HOME/emulator
 export PATH=$PATH:$ANDROID_HOME/tools
 export PATH=$PATH:$ANDROID_HOME/tools/bin
 export PATH=$PATH:$ANDROID_HOME/platform-tools
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 export GRADLE_HOME=$HOME/gradle/gradle-8.2
 export PATH=$PATH:$GRADLE_HOME/bin
-
-cordova build android
+cordova clean android
+cordova build android 
 
