@@ -1,24 +1,52 @@
+//const { json } = require("express");
+
 const showbutton = document.getElementById("show");
 const showarea = document.getElementById("showarea");
 const addbutton = document.getElementById("add");
 const titleinput = document.getElementById("title");
 const valueinput = document.getElementById("waarde");
 const deletebutton = document.getElementById("Delete");
+const showtimeb = document.getElementById("showtime");
+const waardearea = document.getElementById("completewaarde")
 
 let data = null;
+let setting = null;
 var counter = 1;
 let ishown = false;
+var isdel = false;
 
 deletebutton.onclick = deletef
+showtimeb.onclick = function(){
+  if(setting.show_time === true){
+    setting.show_time = false
+    showtimeb.textContent = "Show Time"
+    show();
+    show();
+  }else{
+  setting.show_time = true
+  showtimeb.textContent = "Hide Time"
+  show();
+  show();
+  }
+}
 
 // Probeer data uit localStorage te laden
 const opgeslagen = localStorage.getItem("verzameling");
+const settings = localStorage.getItem("settings");
+
 if (opgeslagen) {
   data = JSON.parse(opgeslagen);
 } else {
-  // Als er nog geen data is, begin met lege verzameling
   data = { verzameling_1: [] };
 }
+
+if (settings) {
+  setting = JSON.parse(settings);
+} else {
+  console.log("hij vind hem niet")
+  setting = { show_time: false }; // of wat je default wil
+}
+
 
 // Event listeners toevoegen
 showbutton.onclick = show;
@@ -27,9 +55,10 @@ addbutton.onclick = add;
 function add() {
   const title = titleinput.value;
   const value = valueinput.value;
+  var tijd = new Date();
 
   if (title && value) {
-    data.verzameling_1.push({ object: title, waarde: value });
+    data.verzameling_1.push({ object: title, waarde: value, datum : tijd});
     save();
     show();
     show(); // Bijwerken van de lijst
@@ -40,6 +69,20 @@ function add() {
   // Inputvelden leegmaken
   titleinput.value = "";
   valueinput.value = "";
+  get_value();
+  get_chart();
+}
+var overallvalue = null;
+var nieuwevalue = null;
+
+function get_value(){
+  nieuwevalue = 0;
+  for (const item of data.verzameling_1){
+    nieuwevalue += parseInt(item.waarde)
+  }
+  overallvalue = nieuwevalue
+
+  waardearea.textContent = `Total value: ${overallvalue}`
 }
 
 function show() {
@@ -49,9 +92,15 @@ function show() {
     let html = "<ul>";
     counter = 1; // reset counter zodat de checkbox IDs kloppen
     for (const item of data.verzameling_1) {
+      console.log(setting.show_time)
+      if (setting.show_time === true){
+        html += `<li><input type="checkbox" id="${counter}checkbox">
+      ${item.object} - €${item.waarde} - ${item.datum}</li>`;
+      counter += 1;
+      }else{
       html += `<li><input type="checkbox" id="${counter}checkbox">
       ${item.object} - €${item.waarde}</li>`;
-      counter += 1;
+      counter += 1;}
     }
     html += "</ul>";
     showarea.innerHTML = html;
@@ -68,32 +117,67 @@ function save() {
 }
 
 function deletef() {
-    // Nieuwe array zonder de geselecteerde items
-    let nieuweVerzameling = [];
+    let nieuweVerzameling = []; // <- Hier resetten bij elke delete
 
     for (let i = 0; i < data.verzameling_1.length; i++) {
         const checkbox = document.getElementById(`${i + 1}checkbox`);
         if (checkbox && checkbox.checked) {
             console.log(`Item ${i} wordt verwijderd:`, data.verzameling_1[i]);
-            // Sla dit item over → dus niet toevoegen aan de nieuwe array
         } else {
-            // Niet geselecteerd? Dan toevoegen aan de nieuwe array
             nieuweVerzameling.push(data.verzameling_1[i]);
         }
     }
 
-    // Vervang de oude verzameling met de nieuwe
     data.verzameling_1 = nieuweVerzameling;
-
-    // Opslaan in localStorage
     save();
-
-    // UI bijwerken
-    counter = 1; // reset de teller, zodat IDs weer kloppen
-    showarea.innerHTML = ""; // eerst leegmaken
-    ishown = false; // zodat de show() opnieuw rendert
+    counter = 1;
+    showarea.innerHTML = "";
+    ishown = false;
     show();
+    get_value();
+    get_chart();
+}
+
+let xValues = [50,60,70,80,90,100,110,120,130,140,150];
+let yValues = [7,8,8,9,9,9,10,11,14,14,15];
+var yValue;
+
+function get_XY(){
+  xValues = [];
+  yValues = [];
+  let yValue = 0; // <-- hier initialiseren
+
+  //maak de xValues de datum
+  for (const item of data.verzameling_1){
+    xValues.push(item.datum);
+  }
+
+  //maak yValues de cumulatieve waarde van de tijd
+  for (const item of data.verzameling_1){
+    yValue += parseInt(item.waarde);
+    yValues.push(yValue);
+  }
+}
+
+
+function get_chart(){
+get_XY();
+
+new Chart("myChart", {
+  type: "line",
+  data: {
+    labels: xValues,
+    datasets: [{
+      backgroundColor:"rgba(0, 255, 0, 0.6)",
+      borderColor: "rgba(0, 255, 0, 1)",
+      data: yValues
+    }]
+  },
+  options:{}
+});
 }
 
 
 
+  get_value();
+get_chart();

@@ -7,6 +7,9 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="styles.css">
+        <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+        </script>
     </head>
     <body>
         <p class="p1">Welcome!</p>
@@ -16,12 +19,15 @@
         Value:
         <input id="waarde" placeholder="Value" class="p1">
         <button id="add" class="p1">Add</button>
+        <button id="showtime" class="p1">Show Time</button>
         </p>
         <br>
         <button id="show" class="p1">Show</button> <button class="p1" id="Delete">Delete</button>
         <div>
             <p class="p1" id="showarea"></p>
         </div>
+        <p class="p1" id="completewaarde"></p>
+        <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
         <script type="module" src="script.js" async defer></script>
         <!--<script type="text/javascript" src="collection.json"></script>-->
     </body>
