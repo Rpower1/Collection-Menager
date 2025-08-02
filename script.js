@@ -141,20 +141,29 @@ function deletef() {
 let xValues = [50,60,70,80,90,100,110,120,130,140,150];
 let yValues = [7,8,8,9,9,9,10,11,14,14,15];
 var yValue;
-
 function get_XY(){
   xValues = [];
   yValues = [];
   let yValue = 0;
 
-  for (const item of data.verzameling_1){
-    // Verkort datum tot YYYY-MM-DD formaat
+  // Eerst: items zonder datum
+  for (const item of data.verzameling_1) {
+    if (!item.datum) {
+      xValues.push("geen datum");
+      yValue += parseInt(item.waarde);
+      yValues.push(yValue);
+    }
+  }
+
+  // Daarna: items met datum (gesorteerd op datum)
+  const datedItems = data.verzameling_1
+    .filter(item => item.datum)
+    .sort((a, b) => new Date(a.datum) - new Date(b.datum)); // optioneel: sorteren
+
+  for (const item of datedItems) {
     const datum = new Date(item.datum);
     const formattedDate = datum.toISOString().split("T")[0];
     xValues.push(formattedDate);
-  }
-
-  for (const item of data.verzameling_1){
     yValue += parseInt(item.waarde);
     yValues.push(yValue);
   }
