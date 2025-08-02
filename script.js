@@ -143,21 +143,23 @@ let yValues = [7,8,8,9,9,9,10,11,14,14,15];
 var yValue;
 
 function get_XY(){
-  xValues = [];
-  yValues = [];
-  let yValue = 0; // <-- hier initialiseren
+  xValues = [];
+  yValues = [];
+  let yValue = 0;
 
-  //maak de xValues de datum
-  for (const item of data.verzameling_1){
-    xValues.push(item.datum);
-  }
+  for (const item of data.verzameling_1){
+    // Verkort datum tot YYYY-MM-DD formaat
+    const datum = new Date(item.datum);
+    const formattedDate = datum.toISOString().split("T")[0];
+    xValues.push(formattedDate);
+  }
 
-  //maak yValues de cumulatieve waarde van de tijd
-  for (const item of data.verzameling_1){
-    yValue += parseInt(item.waarde);
-    yValues.push(yValue);
-  }
+  for (const item of data.verzameling_1){
+    yValue += parseInt(item.waarde);
+    yValues.push(yValue);
+  }
 }
+
 
 
 function get_chart(){
